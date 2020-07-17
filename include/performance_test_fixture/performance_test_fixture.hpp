@@ -26,13 +26,20 @@ namespace performance_test_fixture
 class PerformanceTest : public ::benchmark::Fixture
 {
 public:
+  PERFORMANCE_TEST_FIXTURE_PUBLIC
   PerformanceTest();
 
+  PERFORMANCE_TEST_FIXTURE_PUBLIC
   void SetUp(::benchmark::State & state);
+
+  PERFORMANCE_TEST_FIXTURE_PUBLIC
   void TearDown(::benchmark::State & state);
 
 protected:
+  PERFORMANCE_TEST_FIXTURE_PUBLIC
   void on_malloc(osrf_testing_tools_cpp::memory_tools::MemoryToolsService & service);
+
+  PERFORMANCE_TEST_FIXTURE_PUBLIC
   void on_realloc(osrf_testing_tools_cpp::memory_tools::MemoryToolsService & service);
 
 private:
