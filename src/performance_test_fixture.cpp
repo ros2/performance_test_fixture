@@ -40,14 +40,14 @@ void performance_test_fixture::PerformanceTest::SetUp(benchmark::State &)
     std::function<void(osrf_testing_tools_cpp::memory_tools::MemoryToolsService &)>(
       std::bind(
         &performance_test_fixture::PerformanceTest::on_malloc,
-	this,
-	std::placeholders::_1)));
+        this,
+        std::placeholders::_1)));
   osrf_testing_tools_cpp::memory_tools::on_unexpected_realloc(
     std::function<void(osrf_testing_tools_cpp::memory_tools::MemoryToolsService &)>(
       std::bind(
         &performance_test_fixture::PerformanceTest::on_realloc,
-	this,
-	std::placeholders::_1)));
+        this,
+        std::placeholders::_1)));
   osrf_testing_tools_cpp::memory_tools::enable_monitoring();
   osrf_testing_tools_cpp::memory_tools::expect_no_malloc_begin();
   osrf_testing_tools_cpp::memory_tools::expect_no_realloc_begin();
@@ -57,7 +57,7 @@ void performance_test_fixture::PerformanceTest::TearDown(benchmark::State & stat
 {
   if (osrf_testing_tools_cpp::memory_tools::is_working()) {
     state.counters["heap_allocations"] = benchmark::Counter(
-      (double)allocation_count,
+      static_cast<double>(allocation_count),
       benchmark::Counter::kAvgIterations);
   }
 
