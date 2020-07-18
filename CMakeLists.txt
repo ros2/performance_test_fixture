@@ -30,7 +30,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   osrf_testing_tools_cpp::memory_tools)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE
-  "${PROJECT_NAME}_BUILDING_LIBRARY")
+  "${PROJECT_NAME}_BUILDING_DLL")
 
 install(TARGETS ${PROJECT_NAME}
   EXPORT ${PROJECT_NAME}
