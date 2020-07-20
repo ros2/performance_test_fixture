@@ -44,6 +44,7 @@ protected:
 
 private:
   size_t allocation_count;
+  bool suppress_memory_tools_logging;
 };
 
 }  // namespace performance_test_fixture

@@ -25,3 +25,6 @@ The CMake macro can be used in the same way as the rest of the `ament_cmake_test
   find_package(performance_test_fixture REQUIRED)
   add_performance_test(example_test test/example_test.cpp)
 ```
+
+Because it has a large impact on performance, trace messages coming from the memory tools in `osrf_testing_tools_cpp` are suppressed by default.
+To enable memory operation trace logging, set the environment variable `PERFORMANCE_TEST_FIXTURE_ENABLE_TRACE=1`.

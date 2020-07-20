@@ -15,10 +15,24 @@
 #include "performance_test_fixture/performance_test_fixture.hpp"
 
 #include <algorithm>
+#include <cstdlib>
 #include <vector>
 
+#ifdef _WIN32
+#pragma warning(disable : 4996)
+#endif
+
 performance_test_fixture::PerformanceTest::PerformanceTest()
+: suppress_memory_tools_logging(true)
 {
+  const char * performance_test_fixture_enable_trace = getenv(
+    "PERFORMANCE_TEST_FIXTURE_ENABLE_TRACE");
+  if (nullptr != performance_test_fixture_enable_trace &&
+    strcmp("1", performance_test_fixture_enable_trace) == 0)
+  {
+    suppress_memory_tools_logging = false;
+  }
+
   ComputeStatistics(
     "max",
     [](const std::vector<double> & v) -> double {
@@ -70,7 +84,9 @@ void performance_test_fixture::PerformanceTest::on_malloc(
 )
 {
   allocation_count++;
-  service.ignore();
+  if (suppress_memory_tools_logging) {
+    service.ignore();
+  }
 }
 
 void performance_test_fixture::PerformanceTest::on_realloc(
@@ -78,5 +94,7 @@ void performance_test_fixture::PerformanceTest::on_realloc(
 )
 {
   allocation_count++;
-  service.ignore();
+  if (suppress_memory_tools_logging) {
+    service.ignore();
+  }
 }
