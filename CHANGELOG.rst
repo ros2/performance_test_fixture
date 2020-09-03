@@ -2,6 +2,11 @@
 Changelog for package performance_test_fixture
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.0.3 (2020-09-02)
+------------------
+* Export dependency on ament_cmake_google_benchmark (`#3 <https://github.com/ros2/performance_test_fixture/issues/3>`_)
+* Contributors: Scott K Logan
+
 0.0.2 (2020-07-23)
 ------------------
 * Add missing dependency on ament_cmake_google_benchmark (`#2 <https://github.com/ros2/performance_test_fixture/issues/2>`_)
