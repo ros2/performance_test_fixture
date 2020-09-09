@@ -21,7 +21,7 @@ macro(_performance_test_fixture_find_memory_tools)
       osrf_testing_tools_cpp::memory_tools LIBRARY_PRELOAD_ENVIRONMENT_IS_AVAILABLE)
 
     if(NOT _PERFORMANCE_TEST_FIXTURE_MEMORY_TOOLS_AVAILABLE)
-      if(NOT AMENT_RUN_PERFORMANCE_TESTS)
+      if(AMENT_RUN_PERFORMANCE_TESTS)
         message(WARNING
           "'osrf_testing_tools_cpp' memory tools are not available, C++ tests "
           "using 'performance_test_fixture' can not be run and will be skipped.")
