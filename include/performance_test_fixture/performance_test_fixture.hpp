@@ -42,6 +42,9 @@ protected:
   PERFORMANCE_TEST_FIXTURE_PUBLIC
   void on_realloc(osrf_testing_tools_cpp::memory_tools::MemoryToolsService & service);
 
+  PERFORMANCE_TEST_FIXTURE_PUBLIC
+  void reset_heap_counters();
+
 private:
   size_t allocation_count;
   bool suppress_memory_tools_logging;

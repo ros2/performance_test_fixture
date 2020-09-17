@@ -47,7 +47,7 @@ performance_test_fixture::PerformanceTest::PerformanceTest()
 
 void performance_test_fixture::PerformanceTest::SetUp(benchmark::State &)
 {
-  allocation_count = 0;
+  reset_heap_counters();
 
   osrf_testing_tools_cpp::memory_tools::initialize();
   osrf_testing_tools_cpp::memory_tools::on_unexpected_malloc(
@@ -100,4 +100,9 @@ void performance_test_fixture::PerformanceTest::on_realloc(
   if (suppress_memory_tools_logging) {
     service.ignore();
   }
+}
+
+void performance_test_fixture::PerformanceTest::reset_heap_counters()
+{
+  allocation_count = 0;
 }
