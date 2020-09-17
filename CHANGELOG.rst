@@ -2,6 +2,13 @@
 Changelog for package performance_test_fixture
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.0.4 (2020-09-17)
+------------------
+* Expose a function for resetting the heap counters (`#6 <https://github.com/ros2/performance_test_fixture/issues/6>`_)
+* Stop recording memory operations sooner (`#5 <https://github.com/ros2/performance_test_fixture/issues/5>`_)
+* Suppress memory tools warning if tests will be skipped (`#4 <https://github.com/ros2/performance_test_fixture/issues/4>`_)
+* Contributors: Scott K Logan
+
 0.0.3 (2020-09-02)
 ------------------
 * Export dependency on ament_cmake_google_benchmark (`#3 <https://github.com/ros2/performance_test_fixture/issues/3>`_)
