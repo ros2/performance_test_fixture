@@ -69,6 +69,9 @@ void performance_test_fixture::PerformanceTest::SetUp(benchmark::State &)
 
 void performance_test_fixture::PerformanceTest::TearDown(benchmark::State & state)
 {
+  osrf_testing_tools_cpp::memory_tools::expect_no_malloc_end();
+  osrf_testing_tools_cpp::memory_tools::expect_no_realloc_end();
+
   if (osrf_testing_tools_cpp::memory_tools::is_working()) {
     state.counters["heap_allocations"] = benchmark::Counter(
       static_cast<double>(allocation_count),
