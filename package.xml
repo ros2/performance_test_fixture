@@ -6,7 +6,7 @@
   <description>
     Test fixture and CMake macro for using osrf_testing_tools_cpp with Google Benchmark
   </description>
-  <maintainer email="scott@openrobotics.org">Scott K Logan</maintainer>
+  <maintainer email="alejandro@openrobotics.org">Alejandro Hernandez Cordero</maintainer>
   <license>Apache License 2.0</license>
 
   <buildtool_depend>ament_cmake_core</buildtool_depend>
