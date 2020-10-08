@@ -9,6 +9,8 @@
   <maintainer email="alejandro@openrobotics.org">Alejandro Hernandez Cordero</maintainer>
   <license>Apache License 2.0</license>
 
+  <author email="scott@openrobotics.org">Scott K Logan</author>
+
   <buildtool_depend>ament_cmake_core</buildtool_depend>
   <buildtool_depend>ament_cmake_export_dependencies</buildtool_depend>
   <buildtool_depend>ament_cmake_export_targets</buildtool_depend>
