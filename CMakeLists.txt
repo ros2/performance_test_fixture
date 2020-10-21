@@ -48,7 +48,7 @@ install(
   DESTINATION share/${PROJECT_NAME})
 
 ament_export_targets(${PROJECT_NAME})
-ament_export_dependencies(ament_cmake_google_benchmark)
+ament_export_dependencies(ament_cmake_google_benchmark benchmark osrf_testing_tools_cpp)
 
 ament_package(
   CONFIG_EXTRAS_POST "${PROJECT_NAME}-extras.cmake"
