@@ -2,8 +2,8 @@
 Changelog for package performance_test_fixture
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.5 (2020-10-21)
+------------------
 * Export dependency on benchmark and osrf_testing_tools_cpp (`#8 <https://github.com/ros2/performance_test_fixture/issues/8>`_)
 * Update maintainers (`#7 <https://github.com/ros2/performance_test_fixture/issues/7>`_)
 * Contributors: Alejandro Hernández Cordero, Scott K Logan
