@@ -2,6 +2,12 @@
 Changelog for package performance_test_fixture
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Export dependency on benchmark and osrf_testing_tools_cpp (`#8 <https://github.com/ros2/performance_test_fixture/issues/8>`_)
+* Update maintainers (`#7 <https://github.com/ros2/performance_test_fixture/issues/7>`_)
+* Contributors: Alejandro Hernández Cordero, Scott K Logan
+
 0.0.4 (2020-09-17)
 ------------------
 * Expose a function for resetting the heap counters (`#6 <https://github.com/ros2/performance_test_fixture/issues/6>`_)
