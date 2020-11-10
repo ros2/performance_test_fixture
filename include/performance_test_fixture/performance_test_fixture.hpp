@@ -54,7 +54,7 @@ protected:
 private:
   size_t allocation_count;
   bool suppress_memory_tools_logging;
-  bool are_performance_measurements_paused;
+  bool are_performance_measurements_active;
 };
 
 }  // namespace performance_test_fixture
