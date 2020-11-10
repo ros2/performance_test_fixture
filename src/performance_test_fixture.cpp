@@ -26,7 +26,7 @@ namespace performance_test_fixture
 {
 
 PerformanceTest::PerformanceTest()
-: suppress_memory_tools_logging(true)
+: suppress_memory_tools_logging(true), are_performance_measurements_paused(true)
 {
   const char * performance_test_fixture_enable_trace = getenv(
     "PERFORMANCE_TEST_FIXTURE_ENABLE_TRACE");
@@ -83,7 +83,9 @@ void PerformanceTest::on_malloc(
   osrf_testing_tools_cpp::memory_tools::MemoryToolsService & service
 )
 {
-  allocation_count++;
+  // Refraining from using an if-branch here in performance-critical code
+  allocation_count += static_cast<size_t>(are_performance_measurements_paused);
+
   if (suppress_memory_tools_logging) {
     service.ignore();
   }
@@ -93,7 +95,9 @@ void PerformanceTest::on_realloc(
   osrf_testing_tools_cpp::memory_tools::MemoryToolsService & service
 )
 {
-  allocation_count++;
+  // Refraining from using an if-branch here in performance-critical code
+  allocation_count += static_cast<size_t>(are_performance_measurements_paused);
+
   if (suppress_memory_tools_logging) {
     service.ignore();
   }
@@ -102,6 +106,19 @@ void PerformanceTest::on_realloc(
 void PerformanceTest::reset_heap_counters()
 {
   allocation_count = 0;
+  are_performance_measurements_paused = false;
+}
+
+void PerformanceTest::pause_performance_measurements(::benchmark::State & state)
+{
+  state.PauseTiming();
+  are_performance_measurements_paused = true;
+}
+
+void PerformanceTest::resume_performance_measurements(::benchmark::State & state)
+{
+  are_performance_measurements_paused = false;
+  state.ResumeTiming();
 }
 
 }  // namespace performance_test_fixture

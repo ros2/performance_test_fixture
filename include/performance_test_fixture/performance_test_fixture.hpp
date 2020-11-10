@@ -45,9 +45,16 @@ protected:
   PERFORMANCE_TEST_FIXTURE_PUBLIC
   void reset_heap_counters();
 
+  PERFORMANCE_TEST_FIXTURE_PUBLIC
+  void pause_performance_measurements(::benchmark::State & state);
+
+  PERFORMANCE_TEST_FIXTURE_PUBLIC
+  void resume_performance_measurements(::benchmark::State & state);
+
 private:
   size_t allocation_count;
   bool suppress_memory_tools_logging;
+  bool are_performance_measurements_paused;
 };
 
 }  // namespace performance_test_fixture
