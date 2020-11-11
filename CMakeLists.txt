@@ -65,8 +65,6 @@ if(BUILD_TESTING)
     test/benchmark/benchmark_malloc_realloc.cpp
     TIMEOUT 60)
 
-  # Adding executable and linking done manually to avoid dependency on
-  # osrf_testing_tools_cpp
   # Bypassing performance_test_fixture to avoid LD_PRELOAD of
   # osrf_testing_tools_cpp
   set(_no_mem_tools_skip_arg)
@@ -82,6 +80,10 @@ if(BUILD_TESTING)
     benchmark_malloc_realloc_no_memory_tools
     test/benchmark/benchmark_malloc_realloc_no_memory_tools.cpp
     ${_no_mem_tools_skip_arg})
+
+  add_performance_test(
+    benchmark_pause_resume
+    test/benchmark/benchmark_pause_resume.cpp)
 endif()
 
 ament_package(
