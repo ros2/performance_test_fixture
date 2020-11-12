@@ -16,6 +16,7 @@ set(BUILD_SHARED_LIBS TRUE CACHE BOOL "Build shared libraries")
 find_package(ament_cmake_core REQUIRED)
 find_package(ament_cmake_export_dependencies REQUIRED)
 find_package(ament_cmake_export_targets REQUIRED)
+find_package(ament_cmake_test REQUIRED)
 find_package(benchmark REQUIRED)
 find_package(osrf_testing_tools_cpp REQUIRED)
 
@@ -48,7 +49,21 @@ install(
   DESTINATION share/${PROJECT_NAME})
 
 ament_export_targets(${PROJECT_NAME})
-ament_export_dependencies(ament_cmake_google_benchmark benchmark osrf_testing_tools_cpp)
+ament_export_dependencies(
+  ament_cmake_google_benchmark benchmark osrf_testing_tools_cpp)
+
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  ament_lint_auto_find_test_dependencies()
+
+  set(_PERFORMANCE_TEST_FIXTURE_TESTING_IN_PROJECT TRUE)
+  include(performance_test_fixture-extras.cmake)
+
+  add_performance_test(
+    benchmark_malloc_realloc
+    test/benchmark/benchmark_malloc_realloc.cpp
+    TIMEOUT 60)
+endif()
 
 ament_package(
   CONFIG_EXTRAS_POST "${PROJECT_NAME}-extras.cmake"

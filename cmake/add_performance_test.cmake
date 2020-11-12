@@ -74,9 +74,17 @@ macro(add_performance_test target)
   if(TARGET ${target})
     _performance_test_fixture_find_memory_tools()
 
+    if(_PERFORMANCE_TEST_FIXTURE_TESTING_IN_PROJECT)
+      set(_performance_test_fixture_target "${PROJECT_NAME}")
+    else()
+      set(
+        _performance_test_fixture_target
+        "performance_test_fixture::performance_test_fixture")
+    endif()
+
     target_link_libraries(${target}
       osrf_testing_tools_cpp::memory_tools
-      performance_test_fixture::performance_test_fixture)
+      ${_performance_test_fixture_target})
 
     if(_PERFORMANCE_TEST_FIXTURE_MEMORY_TOOLS_AVAILABLE)
       if(NOT _ARG_ENV)
