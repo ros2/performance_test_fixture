@@ -106,11 +106,8 @@ BENCHMARK_DEFINE_F(PerformanceTestFixture, benchmark_on_realloc)(
 static void malloc_args(benchmark::internal::Benchmark * b)
 {
   for (int shift_left = 0; shift_left < 32; shift_left += 4) {
-    for (int enable_tracking = kDisablePerformanceTracking;
-      enable_tracking <= kEnablePerformanceTracking; enable_tracking++)
-    {
-      b->Args({enable_tracking, 1 << shift_left});
-    }
+    b->Args({kDisablePerformanceTracking, 1 << shift_left});
+    b->Args({kEnablePerformanceTracking, 1 << shift_left});
   }
 }
 
@@ -124,15 +121,12 @@ static void realloc_args(benchmark::internal::Benchmark * b)
 {
   for (int malloc_adjustment = -1; malloc_adjustment <= 1; ++malloc_adjustment) {
     for (int realloc_shift = 0; realloc_shift < 32; realloc_shift += 8) {
-      for (int enable_tracking = kDisablePerformanceTracking;
-        enable_tracking <= kEnablePerformanceTracking; ++enable_tracking)
-      {
-        const int malloc_shift = realloc_shift + malloc_adjustment;
-        if (malloc_shift < 0) {
-          continue;
-        }
-        b->Args({enable_tracking, 1 << malloc_shift, 1 << realloc_shift});
+      const int malloc_shift = realloc_shift + malloc_adjustment;
+      if (malloc_shift < 0) {
+        continue;
       }
+      b->Args({kDisablePerformanceTracking, 1 << malloc_shift, 1 << realloc_shift});
+      b->Args({kEnablePerformanceTracking, 1 << malloc_shift, 1 << realloc_shift});
     }
   }
 }

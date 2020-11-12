@@ -56,7 +56,8 @@ if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()
 
-  set(_PERFORMANCE_TEST_FIXTURE_TESTING_IN_PROJECT TRUE)
+  set(performance_test_fixture_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+  add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
   include(performance_test_fixture-extras.cmake)
 
   add_performance_test(
