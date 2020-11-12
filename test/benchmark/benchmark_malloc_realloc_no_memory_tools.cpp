@@ -18,12 +18,9 @@
 
 #include "./macros.h"
 
-using BenchmarkFixture = ::benchmark::Fixture;
-
 // This does not make use of PauseTiming or ResumeTiming because timing is very short for these
 // benchmarks. However, they should allow for comparisons to the other benchmark_malloc_realloc
-BENCHMARK_DEFINE_F(BenchmarkFixture, benchmark_on_malloc)(
-  benchmark::State & state)
+static void benchmark_on_malloc(benchmark::State & state)
 {
   const size_t malloc_size = state.range(0);
   if (malloc_size < 1) {
@@ -40,8 +37,7 @@ BENCHMARK_DEFINE_F(BenchmarkFixture, benchmark_on_malloc)(
   }
 }
 
-BENCHMARK_DEFINE_F(BenchmarkFixture, benchmark_on_realloc)(
-  benchmark::State & state)
+static void benchmark_on_realloc(benchmark::State & state)
 {
   const int64_t malloc_size = state.range(0);
   if (malloc_size < 1) {
@@ -68,8 +64,7 @@ BENCHMARK_DEFINE_F(BenchmarkFixture, benchmark_on_realloc)(
 }
 
 // Malloc sizes Range from 1 to 2^27 each time multiplying by 16
-BENCHMARK_REGISTER_F(BenchmarkFixture, benchmark_on_malloc)
-->ArgNames({"Malloc Size"})->RangeMultiplier(16)->Range(1, 1 << 28);
+BENCHMARK(benchmark_on_malloc)->ArgNames({"Malloc Size"})->RangeMultiplier(16)->Range(1, 1 << 28);
 
 // Three types of realloc tests, one where malloc is smaller than realloc, one where they are
 // the same, and one where malloc is larger than realloc. Realloc size ranges from 1 to 2^27
@@ -86,6 +81,4 @@ static void realloc_args(benchmark::internal::Benchmark * b)
     }
   }
 }
-BENCHMARK_REGISTER_F(BenchmarkFixture, benchmark_on_realloc)
-->ArgNames({"Malloc Size", "Realloc Size"})
-->Apply(realloc_args);
+BENCHMARK(benchmark_on_realloc)->ArgNames({"Malloc Size", "Realloc Size"})->Apply(realloc_args);

@@ -67,24 +67,21 @@ if(BUILD_TESTING)
 
   # Adding executable and linking done manually to avoid dependency on
   # osrf_testing_tools_cpp
+  # Bypassing performance_test_fixture to avoid LD_PRELOAD of
+  # osrf_testing_tools_cpp
+  set(_no_mem_tools_skip_arg)
   if(TARGET benchmark_malloc_realloc)
-    ament_add_google_benchmark_executable(
-      benchmark_malloc_realloc_no_memory_tools
-      test/benchmark/benchmark_malloc_realloc_no_memory_tools.cpp)
-    if(TARGET benchmark_malloc_realloc_no_memory_tools)
-      target_link_libraries(
-        benchmark_malloc_realloc_no_memory_tools
-        benchmark::benchmark)
-
-      get_target_property(ARG_SKIP_RETURN_CODE benchmark_malloc_realloc SKIP_RETURN_CODE)
-      if(ARG_SKIP_RETURN_CODE)
-        set(ARG_SKIP_TEST "SKIP_TEST")
-      endif()
-
-      ament_add_google_benchmark_test(
-          benchmark_malloc_realloc_no_memory_tools ${ARG_SKIP_TEST})
+    get_target_property(ARG_SKIP_RETURN_CODE benchmark_malloc_realloc SKIP_RETURN_CODE)
+    if(ARG_SKIP_RETURN_CODE)
+      set(_no_mem_tools_skip_arg SKIP_TEST)
     endif()
+  else()
+    set(_no_mem_tools_skip_arg SKIP_TEST)
   endif()
+  ament_add_google_benchmark(
+    benchmark_malloc_realloc_no_memory_tools
+    test/benchmark/benchmark_malloc_realloc_no_memory_tools.cpp
+    ${_no_mem_tools_skip_arg})
 endif()
 
 ament_package(
