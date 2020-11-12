@@ -18,14 +18,6 @@
 
 #include "./macros.h"
 
-namespace
-{
-
-constexpr int kEnablePerformanceTracking = 1;
-constexpr int kDisablePerformanceTracking = 0;
-
-}  // namespace
-
 using BenchmarkFixture = ::benchmark::Fixture;
 
 // This does not make use of PauseTiming or ResumeTiming because timing is very short for these
@@ -51,7 +43,7 @@ BENCHMARK_DEFINE_F(BenchmarkFixture, benchmark_on_malloc)(
 BENCHMARK_DEFINE_F(BenchmarkFixture, benchmark_on_realloc)(
   benchmark::State & state)
 {
-  const int malloc_size = state.range(0);
+  const int64_t malloc_size = state.range(0);
   if (malloc_size < 1) {
     state.SkipWithError("Size for allocation is too small for this test");
   }
@@ -84,9 +76,9 @@ BENCHMARK_REGISTER_F(BenchmarkFixture, benchmark_on_malloc)
 // each time multiplying by 32.
 static void realloc_args(benchmark::internal::Benchmark * b)
 {
-  for (int malloc_adjustment = -1; malloc_adjustment <= 1; ++malloc_adjustment) {
-    for (int realloc_shift = 0; realloc_shift < 32; realloc_shift += 8) {
-      const int malloc_shift = realloc_shift + malloc_adjustment;
+  for (int64_t malloc_adjustment = -1; malloc_adjustment <= 1; ++malloc_adjustment) {
+    for (int64_t realloc_shift = 0; realloc_shift < 32; realloc_shift += 8) {
+      const int64_t malloc_shift = realloc_shift + malloc_adjustment;
       if (malloc_shift < 0) {
         continue;
       }
