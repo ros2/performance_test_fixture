@@ -82,7 +82,7 @@ static void realloc_args(benchmark::internal::Benchmark * b)
       if (malloc_shift < 0) {
         continue;
       }
-      b->Args({1 << malloc_shift, 1 << realloc_shift});
+      b->Args({1ll << malloc_shift, 1ll << realloc_shift});
     }
   }
 }

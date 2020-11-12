@@ -104,8 +104,8 @@ BENCHMARK_DEFINE_F(PerformanceTestFixture, benchmark_on_realloc)(
 static void malloc_args(benchmark::internal::Benchmark * b)
 {
   for (int64_t shift_left = 0; shift_left < 32; shift_left += 4) {
-    b->Args({kDisablePerformanceTracking, 1 << shift_left});
-    b->Args({kEnablePerformanceTracking, 1 << shift_left});
+    b->Args({kDisablePerformanceTracking, 1ll << shift_left});
+    b->Args({kEnablePerformanceTracking, 1ll << shift_left});
   }
 }
 
@@ -123,8 +123,8 @@ static void realloc_args(benchmark::internal::Benchmark * b)
       if (malloc_shift < 0) {
         continue;
       }
-      b->Args({kDisablePerformanceTracking, 1 << malloc_shift, 1 << realloc_shift});
-      b->Args({kEnablePerformanceTracking, 1 << malloc_shift, 1 << realloc_shift});
+      b->Args({kDisablePerformanceTracking, 1ll << malloc_shift, 1ll << realloc_shift});
+      b->Args({kEnablePerformanceTracking, 1ll << malloc_shift, 1ll << realloc_shift});
     }
   }
 }
