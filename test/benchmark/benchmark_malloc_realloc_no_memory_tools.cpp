@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <benchmark/benchmark.h>
 #include <cstdlib>
 #include <string>
 
 #include "./macros.h"
-#include "performance_test_fixture/performance_test_fixture.hpp"
 
 namespace
 {
@@ -26,38 +26,14 @@ constexpr int kDisablePerformanceTracking = 0;
 
 }  // namespace
 
-class PerformanceTestFixture : public performance_test_fixture::PerformanceTest
-{
-public:
-  void SetUp(benchmark::State & state)
-  {
-    if (kEnablePerformanceTracking != state.range(0) &&
-      kDisablePerformanceTracking != state.range(0))
-    {
-      std::string message =
-        std::string("Invalid enable/disable value: ") + std::to_string(state.range(0));
-      state.SkipWithError(message.c_str());
-    }
-    if (kEnablePerformanceTracking == state.range(0)) {
-      performance_test_fixture::PerformanceTest::SetUp(state);
-    }
-  }
-
-  void TearDown(benchmark::State & state)
-  {
-    if (kEnablePerformanceTracking == state.range(0)) {
-      performance_test_fixture::PerformanceTest::TearDown(state);
-    }
-  }
-};
+using BenchmarkFixture = ::benchmark::Fixture;
 
 // This does not make use of PauseTiming or ResumeTiming because timing is very short for these
-// benchmarks. However, they should be enough to measure the overhead of turning on performance
-// measurements.
-BENCHMARK_DEFINE_F(PerformanceTestFixture, benchmark_on_malloc)(
+// benchmarks. However, they should allow for comparisons to the other benchmark_malloc_realloc
+BENCHMARK_DEFINE_F(BenchmarkFixture, benchmark_on_malloc)(
   benchmark::State & state)
 {
-  const size_t malloc_size = state.range(1);
+  const size_t malloc_size = state.range(0);
   if (malloc_size < 1) {
     state.SkipWithError("Size for allocation is too small for this test");
   }
@@ -72,14 +48,14 @@ BENCHMARK_DEFINE_F(PerformanceTestFixture, benchmark_on_malloc)(
   }
 }
 
-BENCHMARK_DEFINE_F(PerformanceTestFixture, benchmark_on_realloc)(
+BENCHMARK_DEFINE_F(BenchmarkFixture, benchmark_on_realloc)(
   benchmark::State & state)
 {
-  const int malloc_size = state.range(1);
+  const int malloc_size = state.range(0);
   if (malloc_size < 1) {
     state.SkipWithError("Size for allocation is too small for this test");
   }
-  const size_t realloc_size = state.range(2);
+  const size_t realloc_size = state.range(1);
   if (realloc_size < 1) {
     state.SkipWithError("Size for reallocation is too small for this test");
   }
@@ -99,22 +75,13 @@ BENCHMARK_DEFINE_F(PerformanceTestFixture, benchmark_on_realloc)(
   }
 }
 
-// Malloc sizes Range from 1 to 2^27 each time multiplying by 16. Each value tested
-// with/without performance metrics
-static void malloc_args(benchmark::internal::Benchmark * b)
-{
-  for (int shift_left = 0; shift_left < 32; shift_left += 4) {
-    b->Args({kDisablePerformanceTracking, 1 << shift_left});
-    b->Args({kEnablePerformanceTracking, 1 << shift_left});
-  }
-}
-
-BENCHMARK_REGISTER_F(PerformanceTestFixture, benchmark_on_malloc)
-->ArgNames({"Enable Performance Tracking", "Malloc Size"})->Apply(malloc_args);
+// Malloc sizes Range from 1 to 2^27 each time multiplying by 16
+BENCHMARK_REGISTER_F(BenchmarkFixture, benchmark_on_malloc)
+->ArgNames({"Malloc Size"})->RangeMultiplier(16)->Range(1, 1 << 28);
 
 // Three types of realloc tests, one where malloc is smaller than realloc, one where they are
 // the same, and one where malloc is larger than realloc. Realloc size ranges from 1 to 2^27
-// each time multiplying by 32. Each stop is tested with/without performance metrics
+// each time multiplying by 32.
 static void realloc_args(benchmark::internal::Benchmark * b)
 {
   for (int malloc_adjustment = -1; malloc_adjustment <= 1; ++malloc_adjustment) {
@@ -123,12 +90,10 @@ static void realloc_args(benchmark::internal::Benchmark * b)
       if (malloc_shift < 0) {
         continue;
       }
-      b->Args({kDisablePerformanceTracking, 1 << malloc_shift, 1 << realloc_shift});
-      b->Args({kEnablePerformanceTracking, 1 << malloc_shift, 1 << realloc_shift});
+      b->Args({1 << malloc_shift, 1 << realloc_shift});
     }
   }
 }
-
-BENCHMARK_REGISTER_F(PerformanceTestFixture, benchmark_on_realloc)
-->ArgNames({"Enable Performance Tracking", "Malloc Size", "Realloc Size"})
+BENCHMARK_REGISTER_F(BenchmarkFixture, benchmark_on_realloc)
+->ArgNames({"Malloc Size", "Realloc Size"})
 ->Apply(realloc_args);
