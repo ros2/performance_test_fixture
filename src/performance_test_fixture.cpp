@@ -26,7 +26,7 @@ namespace performance_test_fixture
 {
 
 PerformanceTest::PerformanceTest()
-: suppress_memory_tools_logging(true)
+: suppress_memory_tools_logging(true), are_allocation_measurements_active(false)
 {
   const char * performance_test_fixture_enable_trace = getenv(
     "PERFORMANCE_TEST_FIXTURE_ENABLE_TRACE");
@@ -83,7 +83,9 @@ void PerformanceTest::on_malloc(
   osrf_testing_tools_cpp::memory_tools::MemoryToolsService & service
 )
 {
-  allocation_count++;
+  // Refraining from using an if-branch here in performance-critical code
+  allocation_count += static_cast<size_t>(are_allocation_measurements_active);
+
   if (suppress_memory_tools_logging) {
     service.ignore();
   }
@@ -93,7 +95,9 @@ void PerformanceTest::on_realloc(
   osrf_testing_tools_cpp::memory_tools::MemoryToolsService & service
 )
 {
-  allocation_count++;
+  // Refraining from using an if-branch here in performance-critical code
+  allocation_count += static_cast<size_t>(are_allocation_measurements_active);
+
   if (suppress_memory_tools_logging) {
     service.ignore();
   }
@@ -102,6 +106,13 @@ void PerformanceTest::on_realloc(
 void PerformanceTest::reset_heap_counters()
 {
   allocation_count = 0;
+  are_allocation_measurements_active = true;
 }
+
+void PerformanceTest::set_are_allocation_measurements_active(bool value)
+{
+  are_allocation_measurements_active = value;
+}
+
 
 }  // namespace performance_test_fixture
