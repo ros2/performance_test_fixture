@@ -18,6 +18,8 @@
 #include <benchmark/benchmark.h>
 #include <osrf_testing_tools_cpp/memory_tools/memory_tools.hpp>
 
+#include <atomic>
+
 #include "performance_test_fixture/visibility_control.hpp"
 
 namespace performance_test_fixture
@@ -49,7 +51,7 @@ protected:
   void set_are_allocation_measurements_active(bool value);
 
 private:
-  size_t allocation_count;
+  std::atomic_size_t allocation_count;
   bool suppress_memory_tools_logging;
   bool are_allocation_measurements_active;
 };
