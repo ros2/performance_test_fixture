@@ -69,6 +69,7 @@ BENCHMARK_DEFINE_F(PerformanceTestFixture, benchmark_pause_resume_measurements)(
   benchmark::State & state)
 {
   for (auto _ : state) {
+    // Manual timing is used here because state.PauseTiming() is called from within.
     auto start = std::chrono::steady_clock::now();
     PERFORMANCE_TEST_FIXTURE_PAUSE_MEASUREMENTS(state, {});
     auto duration =
