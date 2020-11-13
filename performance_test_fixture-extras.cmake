@@ -17,18 +17,23 @@ macro(_performance_test_fixture_find_memory_tools)
     set(_PERFORMANCE_TEST_FIXTURE_FIND_MEMORY_TOOLS TRUE)
     find_package(osrf_testing_tools_cpp REQUIRED)
 
-    get_target_property(_PERFORMANCE_TEST_FIXTURE_MEMORY_TOOLS_AVAILABLE
-      osrf_testing_tools_cpp::memory_tools LIBRARY_PRELOAD_ENVIRONMENT_IS_AVAILABLE)
+    get_target_property(
+      _PERFORMANCE_TEST_FIXTURE_MEMORY_TOOLS_AVAILABLE
+      osrf_testing_tools_cpp::memory_tools
+      LIBRARY_PRELOAD_ENVIRONMENT_IS_AVAILABLE)
 
     if(NOT _PERFORMANCE_TEST_FIXTURE_MEMORY_TOOLS_AVAILABLE)
       if(AMENT_RUN_PERFORMANCE_TESTS)
         message(WARNING
           "'osrf_testing_tools_cpp' memory tools are not available, C++ tests "
-          "using 'performance_test_fixture' can not be run and will be skipped.")
+          "using 'performance_test_fixture' can not be run and will be "
+          "skipped.")
       endif()
     else()
-      get_target_property(_PERFORMANCE_TEST_FIXTURE_MEMORY_TOOLS_ENV
-        osrf_testing_tools_cpp::memory_tools LIBRARY_PRELOAD_ENVIRONMENT_VARIABLE)
+      get_target_property(
+        _PERFORMANCE_TEST_FIXTURE_MEMORY_TOOLS_ENV
+        osrf_testing_tools_cpp::memory_tools
+        LIBRARY_PRELOAD_ENVIRONMENT_VARIABLE)
     endif()
   endif()
 endmacro()

@@ -14,11 +14,16 @@
   <buildtool_depend>ament_cmake_core</buildtool_depend>
   <buildtool_depend>ament_cmake_export_dependencies</buildtool_depend>
   <buildtool_depend>ament_cmake_export_targets</buildtool_depend>
+  <buildtool_depend>ament_cmake_test</buildtool_depend>
 
   <buildtool_export_depend>ament_cmake_google_benchmark</buildtool_export_depend>
 
   <depend>google_benchmark_vendor</depend>
   <depend>osrf_testing_tools_cpp</depend>
+
+  <test_depend>ament_cmake_google_benchmark</test_depend>
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
 
   <export>
     <build_type>ament_cmake</build_type>

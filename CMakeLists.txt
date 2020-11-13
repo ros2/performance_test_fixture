@@ -16,6 +16,7 @@ set(BUILD_SHARED_LIBS TRUE CACHE BOOL "Build shared libraries")
 find_package(ament_cmake_core REQUIRED)
 find_package(ament_cmake_export_dependencies REQUIRED)
 find_package(ament_cmake_export_targets REQUIRED)
+find_package(ament_cmake_test REQUIRED)
 find_package(benchmark REQUIRED)
 find_package(osrf_testing_tools_cpp REQUIRED)
 
@@ -48,7 +49,40 @@ install(
   DESTINATION share/${PROJECT_NAME})
 
 ament_export_targets(${PROJECT_NAME})
-ament_export_dependencies(ament_cmake_google_benchmark benchmark osrf_testing_tools_cpp)
+ament_export_dependencies(
+  ament_cmake_google_benchmark benchmark osrf_testing_tools_cpp)
+
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  ament_lint_auto_find_test_dependencies()
+
+  set(performance_test_fixture_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+  add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+  include(performance_test_fixture-extras.cmake)
+
+  add_performance_test(
+    benchmark_malloc_realloc
+    test/benchmark/benchmark_malloc_realloc.cpp
+    TIMEOUT 60)
+
+  # Adding executable and linking done manually to avoid dependency on
+  # osrf_testing_tools_cpp
+  # Bypassing performance_test_fixture to avoid LD_PRELOAD of
+  # osrf_testing_tools_cpp
+  set(_no_mem_tools_skip_arg)
+  if(TARGET benchmark_malloc_realloc)
+    get_target_property(ARG_SKIP_RETURN_CODE benchmark_malloc_realloc SKIP_RETURN_CODE)
+    if(ARG_SKIP_RETURN_CODE)
+      set(_no_mem_tools_skip_arg SKIP_TEST)
+    endif()
+  else()
+    set(_no_mem_tools_skip_arg SKIP_TEST)
+  endif()
+  ament_add_google_benchmark(
+    benchmark_malloc_realloc_no_memory_tools
+    test/benchmark/benchmark_malloc_realloc_no_memory_tools.cpp
+    ${_no_mem_tools_skip_arg})
+endif()
 
 ament_package(
   CONFIG_EXTRAS_POST "${PROJECT_NAME}-extras.cmake"
