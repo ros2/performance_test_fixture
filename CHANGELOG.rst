@@ -2,8 +2,8 @@
 Changelog for package performance_test_fixture
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.6 (2020-11-19)
+------------------
 * Make allocation counter atomic (`#13 <https://github.com/ros2/performance_test_fixture/issues/13>`_)
   Even if the benchmark itself isn't threaded, the process we're testing
   could be. In any case, this should prevent those shenanigans from
