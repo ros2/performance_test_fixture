@@ -2,6 +2,19 @@
 Changelog for package performance_test_fixture
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Make allocation counter atomic (`#13 <https://github.com/ros2/performance_test_fixture/issues/13>`_)
+  Even if the benchmark itself isn't threaded, the process we're testing
+  could be. In any case, this should prevent those shenanigans from
+  messing up the measurement.
+* Add methods for pausing/resuming performance metrics (`#10 <https://github.com/ros2/performance_test_fixture/issues/10>`_)
+  * Add methods for pausing/resuming performance metrics
+* Add benchmarks to evaluate overhead (`#11 <https://github.com/ros2/performance_test_fixture/issues/11>`_)
+  * Add benchmarks to evaluate overhead in performance tests
+* Add namespace performance_test_fixture to .cpp (`#9 <https://github.com/ros2/performance_test_fixture/issues/9>`_)
+* Contributors: Scott K Logan, brawner
+
 0.0.5 (2020-10-21)
 ------------------
 * Export dependency on benchmark and osrf_testing_tools_cpp (`#8 <https://github.com/ros2/performance_test_fixture/issues/8>`_)
