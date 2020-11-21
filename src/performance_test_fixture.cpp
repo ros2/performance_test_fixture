@@ -26,7 +26,8 @@ namespace performance_test_fixture
 {
 
 PerformanceTest::PerformanceTest()
-: suppress_memory_tools_logging(true), are_allocation_measurements_active(false)
+: suppress_memory_tools_logging(true),
+  are_allocation_measurements_active(false)
 {
   const char * performance_test_fixture_enable_trace = getenv(
     "PERFORMANCE_TEST_FIXTURE_ENABLE_TRACE");
@@ -113,6 +114,5 @@ void PerformanceTest::set_are_allocation_measurements_active(bool value)
 {
   are_allocation_measurements_active = value;
 }
-
 
 }  // namespace performance_test_fixture

@@ -18,6 +18,7 @@ find_package(ament_cmake_export_dependencies REQUIRED)
 find_package(ament_cmake_export_targets REQUIRED)
 find_package(ament_cmake_test REQUIRED)
 find_package(benchmark REQUIRED)
+find_package(mimick_vendor REQUIRED)
 find_package(osrf_testing_tools_cpp REQUIRED)
 
 add_library(${PROJECT_NAME}
@@ -34,7 +35,38 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
 target_compile_definitions(${PROJECT_NAME} PRIVATE
   "PERFORMANCE_TEST_FIXTURE_BUILDING_DLL")
 
-install(TARGETS ${PROJECT_NAME}
+# TODO(cottsay): It would be great if this didn't need to be STATIC, but
+# libmimick is specifically compiled static and without PIC.
+add_library(mimick_memory_manager STATIC
+  src/mimick_memory_manager.cpp)
+
+target_include_directories(mimick_memory_manager PUBLIC
+  $<INSTALL_INTERFACE:include>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
+
+target_include_directories(mimick_memory_manager SYSTEM PRIVATE
+  $<TARGET_PROPERTY:benchmark::benchmark,INTERFACE_INCLUDE_DIRECTORIES>
+  $<TARGET_PROPERTY:mimick,INTERFACE_INCLUDE_DIRECTORIES>)
+
+target_link_libraries(mimick_memory_manager INTERFACE
+  benchmark::benchmark
+  mimick)
+
+add_library(mimick_${PROJECT_NAME} STATIC
+  src/mimick_${PROJECT_NAME}.cpp)
+
+target_include_directories(mimick_${PROJECT_NAME} PUBLIC
+  $<INSTALL_INTERFACE:include>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
+
+target_include_directories(mimick_${PROJECT_NAME} SYSTEM PRIVATE
+  $<TARGET_PROPERTY:benchmark::benchmark,INTERFACE_INCLUDE_DIRECTORIES>)
+
+target_link_libraries(mimick_${PROJECT_NAME} INTERFACE
+  benchmark::benchmark
+  mimick_memory_manager)
+
+install(TARGETS ${PROJECT_NAME} mimick_memory_manager mimick_${PROJECT_NAME}
   EXPORT ${PROJECT_NAME}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
@@ -50,7 +82,10 @@ install(
 
 ament_export_targets(${PROJECT_NAME})
 ament_export_dependencies(
-  ament_cmake_google_benchmark benchmark osrf_testing_tools_cpp)
+  ament_cmake_google_benchmark
+  benchmark
+  mimick_vendor
+  osrf_testing_tools_cpp)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -84,6 +119,15 @@ if(BUILD_TESTING)
   add_performance_test(
     benchmark_pause_resume
     test/benchmark/benchmark_pause_resume.cpp)
+
+  ament_add_google_benchmark(
+    benchmark_malloc_realloc_mimick
+    test/benchmark/benchmark_malloc_realloc_mimick.cpp
+    TIMEOUT 60)
+  if(TARGET benchmark_malloc_realloc_mimick)
+    target_link_libraries(benchmark_malloc_realloc_mimick
+      mimick_performance_test_fixture)
+  endif()
 endif()
 
 ament_package(
