@@ -66,7 +66,21 @@ target_link_libraries(mimick_${PROJECT_NAME} INTERFACE
   benchmark::benchmark
   mimick_memory_manager)
 
-install(TARGETS ${PROJECT_NAME} mimick_memory_manager mimick_${PROJECT_NAME}
+add_library(memory_aware_benchmark_main
+  src/memory_aware_benchmark_main.cpp
+  src/memory_aware_console_reporter.cpp)
+
+target_include_directories(memory_aware_benchmark_main PRIVATE
+  $<INSTALL_INTERFACE:include>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
+
+target_link_libraries(memory_aware_benchmark_main PUBLIC
+  benchmark::benchmark)
+
+target_compile_definitions(memory_aware_benchmark_main PRIVATE
+  "PERFORMANCE_TEST_FIXTURE_BUILDING_DLL")
+
+install(TARGETS ${PROJECT_NAME} mimick_memory_manager mimick_${PROJECT_NAME} memory_aware_benchmark_main
   EXPORT ${PROJECT_NAME}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
@@ -123,10 +137,12 @@ if(BUILD_TESTING)
   ament_add_google_benchmark(
     benchmark_malloc_realloc_mimick
     test/benchmark/benchmark_malloc_realloc_mimick.cpp
-    TIMEOUT 60)
+    TIMEOUT 60
+    SKIP_LINKING_MAIN_LIBRARIES)
   if(TARGET benchmark_malloc_realloc_mimick)
     target_link_libraries(benchmark_malloc_realloc_mimick
-      mimick_performance_test_fixture)
+      mimick_performance_test_fixture
+      memory_aware_benchmark_main)
   endif()
 endif()
 
