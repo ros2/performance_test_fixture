@@ -122,7 +122,7 @@ void MimickMemoryManager::Stop(benchmark::MemoryManager::Result * result)
   stat_lock.unlock();
 }
 
-void MimickMemoryManager::Stop()
+void MimickMemoryManager::Stop() noexcept
 {
   if (MMK_STUB_INVALID != free_stub) {
     mmk_stub_destroy(free_stub);

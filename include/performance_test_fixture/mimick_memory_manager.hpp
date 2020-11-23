@@ -51,7 +51,7 @@ public:
   void Stop(benchmark::MemoryManager::Result * result) override;
 
 private:
-  void Stop();
+  void Stop() noexcept;
 
   void on_free(void * ptr);
   void * on_malloc(size_t size);
