@@ -53,6 +53,7 @@ public:
 private:
   void Stop() noexcept;
 
+  void * on_calloc(size_t nitems, size_t size);
   void on_free(void * ptr);
   void * on_malloc(size_t size);
   void * on_realloc(void * ptr, size_t size);
@@ -66,6 +67,7 @@ private:
   std::unique_ptr<std::unordered_set<void *, std::hash<void *>, std::equal_to<void *>,
     mmk_allocator<void *>>> ptr_set;
 
+  struct mmk_stub * calloc_stub;
   struct mmk_stub * free_stub;
   struct mmk_stub * malloc_stub;
   struct mmk_stub * realloc_stub;

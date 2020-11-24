@@ -14,6 +14,7 @@
 
 #include "performance_test_fixture/mimick_memory_manager.hpp"
 
+#include <cstring>
 #include <functional>
 #include <iostream>
 #include <unordered_set>
@@ -32,6 +33,7 @@ MimickMemoryManager::MimickMemoryManager()
   num_allocs(0),
   ptr_set(new std::unordered_set<void *, std::hash<void *>, std::equal_to<void *>,
     mmk_allocator<void *>>()),
+  calloc_stub(MMK_STUB_INVALID),
   free_stub(MMK_STUB_INVALID),
   malloc_stub(MMK_STUB_INVALID),
   realloc_stub(MMK_STUB_INVALID)
@@ -86,6 +88,12 @@ void MimickMemoryManager::Start()
   num_allocs = 0;
   ptr_set->clear();
 
+  calloc_stub = mmk_stub_create_wrapped("calloc", on_calloc, this, size_t, size_t);
+  if (MMK_STUB_INVALID == calloc_stub) {
+    std::cerr << "Failed to create 'calloc' stub!" << std::endl;
+    exit(1);
+  }
+
   free_stub = mmk_stub_create_wrapped("free", on_free, this, void *);
   if (MMK_STUB_INVALID == free_stub) {
     std::cerr << "Failed to create 'free' stub!" << std::endl;
@@ -123,6 +131,11 @@ void MimickMemoryManager::Stop(benchmark::MemoryManager::Result * result)
 
 void MimickMemoryManager::Stop() noexcept
 {
+  if (MMK_STUB_INVALID != calloc_stub) {
+    mmk_stub_destroy(calloc_stub);
+    calloc_stub = MMK_STUB_INVALID;
+  }
+
   if (MMK_STUB_INVALID != free_stub) {
     mmk_stub_destroy(free_stub);
     free_stub = MMK_STUB_INVALID;
@@ -137,6 +150,33 @@ void MimickMemoryManager::Stop() noexcept
     mmk_stub_destroy(realloc_stub);
     realloc_stub = MMK_STUB_INVALID;
   }
+}
+
+void * MimickMemoryManager::on_calloc(size_t nitems, size_t size)
+{
+  stat_lock.lock();
+  void * new_ptr = mmk_malloc(sizeof(size_t) + (nitems * size));
+
+  if (nullptr != new_ptr) {
+    std::memset(new_ptr, 0x0, nitems * size);
+  }
+
+  if (recording_enabled) {
+    num_allocs++;
+    if (nullptr != new_ptr) {
+      cur_bytes_used += nitems * size;
+      *static_cast<size_t *>(new_ptr) = nitems * size;
+      new_ptr = static_cast<size_t *>(new_ptr) + 1;
+      ptr_set->emplace(new_ptr);
+      if (cur_bytes_used > max_bytes_used) {
+        max_bytes_used = cur_bytes_used;
+      }
+    }
+  }
+
+  stat_lock.unlock();
+
+  return new_ptr;
 }
 
 void MimickMemoryManager::on_free(void * ptr)

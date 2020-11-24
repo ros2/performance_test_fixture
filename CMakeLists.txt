@@ -137,7 +137,7 @@ if(BUILD_TESTING)
   ament_add_google_benchmark(
     benchmark_malloc_realloc_mimick
     test/benchmark/benchmark_malloc_realloc_mimick.cpp
-    TIMEOUT 60
+    TIMEOUT 120
     SKIP_LINKING_MAIN_LIBRARIES)
   if(TARGET benchmark_malloc_realloc_mimick)
     target_link_libraries(benchmark_malloc_realloc_mimick
