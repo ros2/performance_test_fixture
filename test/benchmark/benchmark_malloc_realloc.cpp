@@ -57,14 +57,32 @@ public:
 BENCHMARK_DEFINE_F(PerformanceTestFixture, benchmark_on_malloc)(
   benchmark::State & state)
 {
-  const size_t malloc_size = state.range(1);
-  if (malloc_size < 1) {
+  const size_t alloc_size = state.range(1);
+  if (alloc_size < 1) {
     state.SkipWithError("Size for allocation is too small for this test");
   }
   for (auto _ : state) {
-    void * ptr = std::malloc(malloc_size);
+    void * ptr = std::malloc(alloc_size);
     if (PERFORMANCE_TEST_FIXTURE_UNLIKELY(nullptr == ptr)) {
       state.SkipWithError("Malloc failed to malloc");
+    }
+    std::free(ptr);
+    benchmark::DoNotOptimize(ptr);
+    benchmark::ClobberMemory();
+  }
+}
+
+BENCHMARK_DEFINE_F(PerformanceTestFixture, benchmark_on_calloc)(
+  benchmark::State & state)
+{
+  const size_t alloc_size = state.range(1);
+  if (alloc_size < 1) {
+    state.SkipWithError("Size for allocation is too small for this test");
+  }
+  for (auto _ : state) {
+    void * ptr = std::calloc(1, alloc_size);
+    if (PERFORMANCE_TEST_FIXTURE_UNLIKELY(nullptr == ptr)) {
+      state.SkipWithError("Calloc failed to calloc");
     }
     std::free(ptr);
     benchmark::DoNotOptimize(ptr);
@@ -99,9 +117,9 @@ BENCHMARK_DEFINE_F(PerformanceTestFixture, benchmark_on_realloc)(
   }
 }
 
-// Malloc sizes Range from 1 to 2^27 each time multiplying by 16. Each value tested
+// allocation sizes Range from 1 to 2^27 each time multiplying by 16. Each value tested
 // with/without performance metrics
-static void malloc_args(benchmark::internal::Benchmark * b)
+static void alloc_args(benchmark::internal::Benchmark * b)
 {
   for (int64_t shift_left = 0; shift_left < 32; shift_left += 4) {
     b->Args({kDisablePerformanceTracking, 1ll << shift_left});
@@ -110,7 +128,10 @@ static void malloc_args(benchmark::internal::Benchmark * b)
 }
 
 BENCHMARK_REGISTER_F(PerformanceTestFixture, benchmark_on_malloc)
-->ArgNames({"Enable Performance Tracking", "Malloc Size"})->Apply(malloc_args);
+->ArgNames({"Enable Performance Tracking", "Alloc Size"})->Apply(alloc_args);
+
+BENCHMARK_REGISTER_F(PerformanceTestFixture, benchmark_on_calloc)
+->ArgNames({"Enable Performance Tracking", "Alloc Size"})->Apply(alloc_args);
 
 // Three types of realloc tests, one where malloc is smaller than realloc, one where they are
 // the same, and one where malloc is larger than realloc. Realloc size ranges from 1 to 2^27
@@ -130,5 +151,5 @@ static void realloc_args(benchmark::internal::Benchmark * b)
 }
 
 BENCHMARK_REGISTER_F(PerformanceTestFixture, benchmark_on_realloc)
-->ArgNames({"Enable Performance Tracking", "Malloc Size", "Realloc Size"})
+->ArgNames({"Enable Performance Tracking", "Alloc Size", "Realloc Size"})
 ->Apply(realloc_args);
