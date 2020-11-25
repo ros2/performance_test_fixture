@@ -63,7 +63,7 @@ if(BUILD_TESTING)
   add_performance_test(
     benchmark_malloc_realloc
     test/benchmark/benchmark_malloc_realloc.cpp
-    TIMEOUT 60)
+    TIMEOUT 90)
 
   # Bypassing performance_test_fixture to avoid LD_PRELOAD of
   # osrf_testing_tools_cpp
@@ -79,7 +79,8 @@ if(BUILD_TESTING)
   ament_add_google_benchmark(
     benchmark_malloc_realloc_no_memory_tools
     test/benchmark/benchmark_malloc_realloc_no_memory_tools.cpp
-    ${_no_mem_tools_skip_arg})
+    ${_no_mem_tools_skip_arg}
+    TIMEOUT 60)
 
   add_performance_test(
     benchmark_pause_resume
