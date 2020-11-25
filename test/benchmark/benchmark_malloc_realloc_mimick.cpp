@@ -166,8 +166,18 @@ BENCHMARK_REGISTER_F(PerformanceTestFixture, benchmark_on_malloc)
 BENCHMARK_REGISTER_F(PerformanceTestFixture, benchmark_on_calloc)
 ->ArgNames({"Enable Performance Tracking", "Alloc Size"})->Apply(alloc_args);
 
+static void alloc_many_args(benchmark::internal::Benchmark * b)
+{
+  for (int64_t shift_left = 0; shift_left < 24; shift_left += 4) {
+    b->Args({kDisablePerformanceTracking, 1ll << shift_left});
+    b->Args({kEnablePerformanceTracking, 1ll << shift_left});
+    b->Args({kForcePerformanceTracking, 1ll << shift_left});
+  }
+}
+
+
 BENCHMARK_REGISTER_F(PerformanceTestFixture, benchmark_on_malloc_many)
-->ArgNames({"Enable Performance Tracking", "Alloc Size"})->Apply(alloc_args);
+->ArgNames({"Enable Performance Tracking", "Alloc Size"})->Apply(alloc_many_args);
 
 // Three types of realloc tests, one where malloc is smaller than realloc, one where they are
 // the same, and one where malloc is larger than realloc. Realloc size ranges from 1 to 2^27
