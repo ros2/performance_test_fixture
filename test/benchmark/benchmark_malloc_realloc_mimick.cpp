@@ -110,7 +110,7 @@ BENCHMARK_DEFINE_F(PerformanceTestFixture, benchmark_on_malloc_many)(
   for (auto _ : state) {
     for (size_t i = 0; i < 4096; i++) {
       ptrs[i] = std::malloc(alloc_size);
-      if (nullptr == ptrs[i]) {
+      if (PERFORMANCE_TEST_FIXTURE_UNLIKELY(nullptr == ptrs[i])) {
         state.SkipWithError("Malloc failed to malloc");
       }
     }
