@@ -40,10 +40,7 @@ public:
 
 protected:
   PERFORMANCE_TEST_FIXTURE_PUBLIC
-  void on_malloc(osrf_testing_tools_cpp::memory_tools::MemoryToolsService & service);
-
-  PERFORMANCE_TEST_FIXTURE_PUBLIC
-  void on_realloc(osrf_testing_tools_cpp::memory_tools::MemoryToolsService & service);
+  void on_alloc(osrf_testing_tools_cpp::memory_tools::MemoryToolsService & service);
 
   PERFORMANCE_TEST_FIXTURE_PUBLIC
   void reset_heap_counters();

@@ -54,19 +54,24 @@ void PerformanceTest::SetUp(benchmark::State &)
   reset_heap_counters();
 
   osrf_testing_tools_cpp::memory_tools::initialize();
+  osrf_testing_tools_cpp::memory_tools::on_unexpected_calloc(
+    std::function<void(osrf_testing_tools_cpp::memory_tools::MemoryToolsService &)>(
+      std::bind(&PerformanceTest::on_alloc, this, std::placeholders::_1)));
   osrf_testing_tools_cpp::memory_tools::on_unexpected_malloc(
     std::function<void(osrf_testing_tools_cpp::memory_tools::MemoryToolsService &)>(
-      std::bind(&PerformanceTest::on_malloc, this, std::placeholders::_1)));
+      std::bind(&PerformanceTest::on_alloc, this, std::placeholders::_1)));
   osrf_testing_tools_cpp::memory_tools::on_unexpected_realloc(
     std::function<void(osrf_testing_tools_cpp::memory_tools::MemoryToolsService &)>(
-      std::bind(&PerformanceTest::on_realloc, this, std::placeholders::_1)));
+      std::bind(&PerformanceTest::on_alloc, this, std::placeholders::_1)));
   osrf_testing_tools_cpp::memory_tools::enable_monitoring();
+  osrf_testing_tools_cpp::memory_tools::expect_no_calloc_begin();
   osrf_testing_tools_cpp::memory_tools::expect_no_malloc_begin();
   osrf_testing_tools_cpp::memory_tools::expect_no_realloc_begin();
 }
 
 void PerformanceTest::TearDown(benchmark::State & state)
 {
+  osrf_testing_tools_cpp::memory_tools::expect_no_calloc_end();
   osrf_testing_tools_cpp::memory_tools::expect_no_malloc_end();
   osrf_testing_tools_cpp::memory_tools::expect_no_realloc_end();
 
@@ -80,19 +85,7 @@ void PerformanceTest::TearDown(benchmark::State & state)
   osrf_testing_tools_cpp::memory_tools::uninitialize();
 }
 
-void PerformanceTest::on_malloc(
-  osrf_testing_tools_cpp::memory_tools::MemoryToolsService & service
-)
-{
-  // Refraining from using an if-branch here in performance-critical code
-  allocation_count += static_cast<size_t>(are_allocation_measurements_active);
-
-  if (suppress_memory_tools_logging) {
-    service.ignore();
-  }
-}
-
-void PerformanceTest::on_realloc(
+void PerformanceTest::on_alloc(
   osrf_testing_tools_cpp::memory_tools::MemoryToolsService & service
 )
 {
