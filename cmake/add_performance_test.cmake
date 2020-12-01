@@ -14,15 +14,13 @@
 
 #
 # Add a google benchmark test which utilizes performance_test_fixture to
-# leverage osrf_testing_tools_cpp.
+# leverage Mimick for memory recording.
 #
 # Call add_executable(target ARGN), link it against the google benchmark
 # libraries and register the executable as a test.
 #
 # If google benchmark is not available the specified target is not being created
 # and therefore the target existence should be checked before being used.
-#
-# If osrf_testing_tools_cpp memory_tools is not available the test is skipped.
 #
 # :param target: the target name which will also be used as the test name
 # :type target: string
@@ -65,27 +63,16 @@ macro(add_performance_test target)
   endif()
 
   # add executable
-  set(_argn_executable ${_ARG_UNPARSED_ARGUMENTS})
-  if(_ARG_SKIP_LINKING_MAIN_LIBRARIES)
-    list(APPEND _argn_executable "SKIP_LINKING_MAIN_LIBRARIES")
-  endif()
+  set(_argn_executable ${_ARG_UNPARSED_ARGUMENTS} "SKIP_LINKING_MAIN_LIBRARIES")
   ament_add_google_benchmark_executable("${target}" ${_argn_executable})
 
   if(TARGET ${target})
-    _performance_test_fixture_find_memory_tools()
-
     target_link_libraries(${target}
-      osrf_testing_tools_cpp::memory_tools
       performance_test_fixture::performance_test_fixture)
 
-    if(_PERFORMANCE_TEST_FIXTURE_MEMORY_TOOLS_AVAILABLE)
-      if(NOT _ARG_ENV)
-        set(_ARG_ENV "")
-      endif()
-      list(APPEND _ARG_ENV
-        ${_PERFORMANCE_TEST_FIXTURE_MEMORY_TOOLS_ENV})
-    else()
-      set(_ARG_SKIP_TEST TRUE)
+    if(NOT _ARG_SKIP_LINKING_MAIN_LIBRARIES)
+      target_link_libraries(${target}
+        performance_test_fixture::memory_aware_benchmark_main)
     endif()
   endif()
 

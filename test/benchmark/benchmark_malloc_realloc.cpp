@@ -21,6 +21,7 @@
 namespace
 {
 
+constexpr int kForcePerformanceTracking = 2;
 constexpr int kEnablePerformanceTracking = 1;
 constexpr int kDisablePerformanceTracking = 0;
 
@@ -31,15 +32,21 @@ class PerformanceTestFixture : public performance_test_fixture::PerformanceTest
 public:
   void SetUp(benchmark::State & state)
   {
-    if (kEnablePerformanceTracking != state.range(0) &&
-      kDisablePerformanceTracking != state.range(0))
-    {
-      std::string message =
-        std::string("Invalid enable/disable value: ") + std::to_string(state.range(0));
-      state.SkipWithError(message.c_str());
-    }
-    if (kEnablePerformanceTracking == state.range(0)) {
-      performance_test_fixture::PerformanceTest::SetUp(state);
+    switch (state.range(0)) {
+      case kDisablePerformanceTracking:
+        break;
+      case kEnablePerformanceTracking:
+        performance_test_fixture::PerformanceTest::SetUp(state);
+        break;
+      case kForcePerformanceTracking:
+        performance_test_fixture::PerformanceTest::SetUp(state);
+        memory_manager->Start();
+        break;
+      default:
+        std::string message =
+          std::string("Invalid enable/disable value: ") + std::to_string(state.range(0));
+        state.SkipWithError(message.c_str());
+        break;
     }
   }
 
@@ -47,6 +54,8 @@ public:
   {
     if (kEnablePerformanceTracking == state.range(0)) {
       performance_test_fixture::PerformanceTest::TearDown(state);
+    } else if (kForcePerformanceTracking == state.range(0)) {
+      memory_manager->Pause();
     }
   }
 };
@@ -90,11 +99,34 @@ BENCHMARK_DEFINE_F(PerformanceTestFixture, benchmark_on_calloc)(
   }
 }
 
+BENCHMARK_DEFINE_F(PerformanceTestFixture, benchmark_on_malloc_many)(
+  benchmark::State & state)
+{
+  const size_t alloc_size = state.range(1);
+  if (alloc_size < 1) {
+    state.SkipWithError("Size for allocation is too small for this test");
+  }
+  void * ptrs[4096];
+  for (auto _ : state) {
+    for (size_t i = 0; i < 4096; i++) {
+      ptrs[i] = std::malloc(alloc_size);
+      if (PERFORMANCE_TEST_FIXTURE_UNLIKELY(nullptr == ptrs[i])) {
+        state.SkipWithError("Malloc failed to malloc");
+      }
+    }
+    for (size_t i = 0; i < 4096; i++) {
+      std::free(ptrs[i]);
+    }
+    benchmark::DoNotOptimize(ptrs);
+    benchmark::ClobberMemory();
+  }
+}
+
 BENCHMARK_DEFINE_F(PerformanceTestFixture, benchmark_on_realloc)(
   benchmark::State & state)
 {
-  const int64_t malloc_size = state.range(1);
-  if (malloc_size < 1) {
+  const int64_t alloc_size = state.range(1);
+  if (alloc_size < 1) {
     state.SkipWithError("Size for allocation is too small for this test");
   }
   const size_t realloc_size = state.range(2);
@@ -102,7 +134,7 @@ BENCHMARK_DEFINE_F(PerformanceTestFixture, benchmark_on_realloc)(
     state.SkipWithError("Size for reallocation is too small for this test");
   }
   for (auto _ : state) {
-    void * ptr = std::malloc(malloc_size);
+    void * ptr = std::malloc(alloc_size);
     if (PERFORMANCE_TEST_FIXTURE_UNLIKELY(nullptr == ptr)) {
       state.SkipWithError("Malloc failed to malloc");
     }
@@ -124,6 +156,7 @@ static void alloc_args(benchmark::internal::Benchmark * b)
   for (int64_t shift_left = 0; shift_left < 32; shift_left += 4) {
     b->Args({kDisablePerformanceTracking, 1ll << shift_left});
     b->Args({kEnablePerformanceTracking, 1ll << shift_left});
+    b->Args({kForcePerformanceTracking, 1ll << shift_left});
   }
 }
 
@@ -132,6 +165,18 @@ BENCHMARK_REGISTER_F(PerformanceTestFixture, benchmark_on_malloc)
 
 BENCHMARK_REGISTER_F(PerformanceTestFixture, benchmark_on_calloc)
 ->ArgNames({"Enable Performance Tracking", "Alloc Size"})->Apply(alloc_args);
+
+static void alloc_many_args(benchmark::internal::Benchmark * b)
+{
+  for (int64_t shift_left = 0; shift_left < 24; shift_left += 4) {
+    b->Args({kDisablePerformanceTracking, 1ll << shift_left});
+    b->Args({kEnablePerformanceTracking, 1ll << shift_left});
+    b->Args({kForcePerformanceTracking, 1ll << shift_left});
+  }
+}
+
+BENCHMARK_REGISTER_F(PerformanceTestFixture, benchmark_on_malloc_many)
+->ArgNames({"Enable Performance Tracking", "Alloc Size"})->Apply(alloc_many_args);
 
 // Three types of realloc tests, one where malloc is smaller than realloc, one where they are
 // the same, and one where malloc is larger than realloc. Realloc size ranges from 1 to 2^27
@@ -146,6 +191,7 @@ static void realloc_args(benchmark::internal::Benchmark * b)
       }
       b->Args({kDisablePerformanceTracking, 1ll << malloc_shift, 1ll << realloc_shift});
       b->Args({kEnablePerformanceTracking, 1ll << malloc_shift, 1ll << realloc_shift});
+      b->Args({kForcePerformanceTracking, 1ll << malloc_shift, 1ll << realloc_shift});
     }
   }
 }

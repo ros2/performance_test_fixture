@@ -4,7 +4,7 @@
   <name>performance_test_fixture</name>
   <version>0.0.6</version>
   <description>
-    Test fixture and CMake macro for using osrf_testing_tools_cpp with Google Benchmark
+    Test fixture and CMake macro for using Mimick with Google Benchmark
   </description>
   <maintainer email="alejandro@openrobotics.org">Alejandro Hernandez Cordero</maintainer>
   <license>Apache License 2.0</license>
@@ -20,7 +20,6 @@
 
   <depend>google_benchmark_vendor</depend>
   <depend>mimick_vendor</depend>
-  <depend>osrf_testing_tools_cpp</depend>
 
   <test_depend>ament_cmake_google_benchmark</test_depend>
   <test_depend>ament_lint_auto</test_depend>
