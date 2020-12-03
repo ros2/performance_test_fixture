@@ -31,8 +31,7 @@ MimickMemoryManager::MimickMemoryManager()
   cur_bytes_used(0),
   max_bytes_used(0),
   num_allocs(0),
-  ptr_set(new std::unordered_set<void *, std::hash<void *>, std::equal_to<void *>,
-    mmk_allocator<void *>>()),
+  ptr_set(new mmk_unordered_set<void *>()),
   calloc_stub(MMK_STUB_INVALID),
   free_stub(MMK_STUB_INVALID),
   malloc_stub(MMK_STUB_INVALID),
@@ -90,26 +89,22 @@ void MimickMemoryManager::Start()
 
   calloc_stub = mmk_stub_create_wrapped("calloc", on_calloc, this, size_t, size_t);
   if (MMK_STUB_INVALID == calloc_stub) {
-    std::cerr << "Failed to create 'calloc' stub!" << std::endl;
-    exit(1);
+    perror("Failed to create 'calloc' stub");
   }
 
   free_stub = mmk_stub_create_wrapped("free", on_free, this, void *);
   if (MMK_STUB_INVALID == free_stub) {
-    std::cerr << "Failed to create 'free' stub!" << std::endl;
-    exit(1);
+    perror("Failed to create 'free' stub");
   }
 
   malloc_stub = mmk_stub_create_wrapped("malloc", on_malloc, this, size_t);
   if (MMK_STUB_INVALID == malloc_stub) {
-    std::cerr << "Failed to create 'malloc' stub!" << std::endl;
-    exit(1);
+    perror("Failed to create 'malloc' stub");
   }
 
   realloc_stub = mmk_stub_create_wrapped("realloc", on_realloc, this, void *, size_t);
   if (MMK_STUB_INVALID == realloc_stub) {
-    std::cerr << "Failed to create 'realloc' stub!" << std::endl;
-    exit(1);
+    perror("Failed to create 'realloc' stub");
   }
 
   stat_lock.unlock();

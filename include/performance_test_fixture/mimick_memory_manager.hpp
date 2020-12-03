@@ -64,8 +64,10 @@ private:
   decltype(benchmark::MemoryManager::Result::max_bytes_used) cur_bytes_used;
   decltype(benchmark::MemoryManager::Result::max_bytes_used) max_bytes_used;
   decltype(benchmark::MemoryManager::Result::num_allocs) num_allocs;
-  std::unique_ptr<std::unordered_set<void *, std::hash<void *>, std::equal_to<void *>,
-    mmk_allocator<void *>>> ptr_set;
+
+  template<typename T>
+  using mmk_unordered_set = std::unordered_set<T, std::hash<T>, std::equal_to<T>, mmk_allocator<T>>;
+  std::unique_ptr<mmk_unordered_set<void *>> ptr_set;
 
   struct mmk_stub * calloc_stub;
   struct mmk_stub * free_stub;

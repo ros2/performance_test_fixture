@@ -46,14 +46,15 @@ struct mmk_allocator
 {
   typedef T value_type;
 
-  mmk_allocator()
+  mmk_allocator() noexcept
   {
     // TODO(cottsay): This is just a hack to get Mimick to initialize the "vital" functions.
     mmk_stub * stub = mmk_stub_create("free", (mmk_fn)dummy_free, nullptr);
-    if (MMK_STUB_INVALID == stub) {
-      abort();
+    if (MMK_STUB_INVALID != stub) {
+      // We don't actually care if this succeeds - calling the function will initialize Mimick
+      // regardless.
+      mmk_stub_destroy(stub);
     }
-    mmk_stub_destroy(stub);
   }
 
   template<class U>
@@ -78,7 +79,7 @@ struct mmk_allocator
   }
 
 private:
-  static void dummy_free(void * unused)
+  static void dummy_free(void * unused) noexcept
   {
     (void)unused;
   }
