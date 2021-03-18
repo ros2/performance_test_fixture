@@ -2,8 +2,8 @@
 Changelog for package performance_test_fixture
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.7 (2021-03-18)
+------------------
 * Record calls to calloc, update tests (`#15 <https://github.com/ros2/performance_test_fixture/issues/15>`_)
 * Contributors: Scott K Logan
 
