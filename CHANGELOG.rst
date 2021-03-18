@@ -2,6 +2,11 @@
 Changelog for package performance_test_fixture
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Record calls to calloc, update tests (`#15 <https://github.com/ros2/performance_test_fixture/issues/15>`_)
+* Contributors: Scott K Logan
+
 0.0.6 (2020-11-19)
 ------------------
 * Make allocation counter atomic (`#13 <https://github.com/ros2/performance_test_fixture/issues/13>`_)
