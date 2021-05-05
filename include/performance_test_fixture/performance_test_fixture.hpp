@@ -16,41 +16,29 @@
 #define PERFORMANCE_TEST_FIXTURE__PERFORMANCE_TEST_FIXTURE_HPP_
 
 #include <benchmark/benchmark.h>
-#include <osrf_testing_tools_cpp/memory_tools/memory_tools.hpp>
 
-#include <atomic>
+#include <memory>
 
-#include "performance_test_fixture/visibility_control.hpp"
+#include "performance_test_fixture/mimick_memory_manager.hpp"
 
 namespace performance_test_fixture
 {
 
-class PerformanceTest : public ::benchmark::Fixture
+class PerformanceTest : public benchmark::Fixture
 {
 public:
-  PERFORMANCE_TEST_FIXTURE_PUBLIC
   PerformanceTest();
 
-  PERFORMANCE_TEST_FIXTURE_PUBLIC
-  void SetUp(::benchmark::State & state);
+  void SetUp(benchmark::State & state) override;
 
-  PERFORMANCE_TEST_FIXTURE_PUBLIC
-  void TearDown(::benchmark::State & state);
+  void TearDown(benchmark::State & state) override;
 
 protected:
-  PERFORMANCE_TEST_FIXTURE_PUBLIC
-  void on_alloc(osrf_testing_tools_cpp::memory_tools::MemoryToolsService & service);
-
-  PERFORMANCE_TEST_FIXTURE_PUBLIC
   void reset_heap_counters();
 
-  PERFORMANCE_TEST_FIXTURE_PUBLIC
   void set_are_allocation_measurements_active(bool value);
 
-private:
-  std::atomic_size_t allocation_count;
-  bool suppress_memory_tools_logging;
-  bool are_allocation_measurements_active;
+  std::unique_ptr<MimickMemoryManager> memory_manager;
 };
 
 }  // namespace performance_test_fixture

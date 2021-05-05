@@ -14,98 +14,64 @@
 
 #include "performance_test_fixture/performance_test_fixture.hpp"
 
-#include <algorithm>
-#include <cstdlib>
-#include <vector>
-
-#ifdef _WIN32
-#pragma warning(disable : 4996)
-#endif
-
 namespace performance_test_fixture
 {
 
-PerformanceTest::PerformanceTest()
-: suppress_memory_tools_logging(true), are_allocation_measurements_active(false)
+/*
+ * This is a lightweight MemoryManager wrapper that unregisters itself when it
+ * is asked to stop recording. This is necessary so that when a benchmark
+ * executable contains multiple tests and not all of them use this fixture,
+ * the memory manager (which is stored in Google Benchmark as a global) isn't
+ * registered despite the absence of this fixture.
+ *
+ * Since that behavior is specific to our use of a fixture to take care of
+ * the MemoryManager registration, it isn't intrinsic to the MemoryManager
+ * concept in general, which is why this class is implemented here.
+ */
+template<class U>
+class AutoStopMemoryManager : public U
 {
-  const char * performance_test_fixture_enable_trace = getenv(
-    "PERFORMANCE_TEST_FIXTURE_ENABLE_TRACE");
-  if (nullptr != performance_test_fixture_enable_trace &&
-    strcmp("1", performance_test_fixture_enable_trace) == 0)
+public:
+  void Stop(benchmark::MemoryManager::Result * result) override
   {
-    suppress_memory_tools_logging = false;
+    U::Stop(result);
+    benchmark::RegisterMemoryManager(nullptr);
   }
+};
 
-  ComputeStatistics(
-    "max",
-    [](const std::vector<double> & v) -> double {
-      return *(std::max_element(std::begin(v), std::end(v)));
-    });
-  ComputeStatistics(
-    "min",
-    [](const std::vector<double> & v) -> double {
-      return *(std::min_element(std::begin(v), std::end(v)));
-    });
+PerformanceTest::PerformanceTest()
+: memory_manager(new AutoStopMemoryManager<MimickMemoryManager>())
+{
 }
 
 void PerformanceTest::SetUp(benchmark::State &)
 {
-  reset_heap_counters();
-
-  osrf_testing_tools_cpp::memory_tools::initialize();
-  osrf_testing_tools_cpp::memory_tools::on_unexpected_calloc(
-    std::function<void(osrf_testing_tools_cpp::memory_tools::MemoryToolsService &)>(
-      std::bind(&PerformanceTest::on_alloc, this, std::placeholders::_1)));
-  osrf_testing_tools_cpp::memory_tools::on_unexpected_malloc(
-    std::function<void(osrf_testing_tools_cpp::memory_tools::MemoryToolsService &)>(
-      std::bind(&PerformanceTest::on_alloc, this, std::placeholders::_1)));
-  osrf_testing_tools_cpp::memory_tools::on_unexpected_realloc(
-    std::function<void(osrf_testing_tools_cpp::memory_tools::MemoryToolsService &)>(
-      std::bind(&PerformanceTest::on_alloc, this, std::placeholders::_1)));
-  osrf_testing_tools_cpp::memory_tools::enable_monitoring();
-  osrf_testing_tools_cpp::memory_tools::expect_no_calloc_begin();
-  osrf_testing_tools_cpp::memory_tools::expect_no_malloc_begin();
-  osrf_testing_tools_cpp::memory_tools::expect_no_realloc_begin();
+  // Registering the MemoryManager doesn't mean that it will be used in the
+  // current run. Benchmark does the timing measurements first, so this will
+  // cause the MemoryManager to be registered during those runs, but it won't
+  // be actually started until the registration is checked after the timing
+  // runs are finished.
+  benchmark::RegisterMemoryManager(memory_manager.get());
+  memory_manager->Reset();
 }
 
-void PerformanceTest::TearDown(benchmark::State & state)
+void PerformanceTest::TearDown(benchmark::State &)
 {
-  osrf_testing_tools_cpp::memory_tools::expect_no_calloc_end();
-  osrf_testing_tools_cpp::memory_tools::expect_no_malloc_end();
-  osrf_testing_tools_cpp::memory_tools::expect_no_realloc_end();
-
-  if (osrf_testing_tools_cpp::memory_tools::is_working()) {
-    state.counters["heap_allocations"] = benchmark::Counter(
-      static_cast<double>(allocation_count),
-      benchmark::Counter::kAvgIterations);
-  }
-
-  osrf_testing_tools_cpp::memory_tools::disable_monitoring();
-  osrf_testing_tools_cpp::memory_tools::uninitialize();
-}
-
-void PerformanceTest::on_alloc(
-  osrf_testing_tools_cpp::memory_tools::MemoryToolsService & service
-)
-{
-  // Refraining from using an if-branch here in performance-critical code
-  allocation_count += static_cast<size_t>(are_allocation_measurements_active);
-
-  if (suppress_memory_tools_logging) {
-    service.ignore();
-  }
+  memory_manager->Pause();
 }
 
 void PerformanceTest::reset_heap_counters()
 {
-  allocation_count = 0;
-  are_allocation_measurements_active = true;
+  memory_manager->Reset();
 }
 
 void PerformanceTest::set_are_allocation_measurements_active(bool value)
 {
-  are_allocation_measurements_active = value;
+  if (value) {
+    memory_manager->Resume();
+  } else {
+    memory_manager->Pause();
+  }
 }
-
 
 }  // namespace performance_test_fixture

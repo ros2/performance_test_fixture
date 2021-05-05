@@ -18,9 +18,12 @@ find_package(ament_cmake_export_dependencies REQUIRED)
 find_package(ament_cmake_export_targets REQUIRED)
 find_package(ament_cmake_test REQUIRED)
 find_package(benchmark REQUIRED)
-find_package(osrf_testing_tools_cpp REQUIRED)
+find_package(mimick_vendor REQUIRED)
 
-add_library(${PROJECT_NAME}
+# TODO(cottsay): It would be great if this didn't need to be STATIC, but
+# libmimick is specifically compiled static and without PIC.
+add_library(${PROJECT_NAME} STATIC
+  src/mimick_memory_manager.cpp
   src/${PROJECT_NAME}.cpp)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
@@ -29,12 +32,26 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
   benchmark::benchmark
-  osrf_testing_tools_cpp::memory_tools)
+  mimick)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE
   "PERFORMANCE_TEST_FIXTURE_BUILDING_DLL")
 
-install(TARGETS ${PROJECT_NAME}
+add_library(memory_aware_benchmark_main
+  src/memory_aware_benchmark_main.cpp
+  src/memory_aware_console_reporter.cpp)
+
+target_include_directories(memory_aware_benchmark_main PRIVATE
+  $<INSTALL_INTERFACE:include>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
+
+target_link_libraries(memory_aware_benchmark_main PUBLIC
+  benchmark::benchmark)
+
+target_compile_definitions(memory_aware_benchmark_main PRIVATE
+  "PERFORMANCE_TEST_FIXTURE_BUILDING_DLL")
+
+install(TARGETS ${PROJECT_NAME} memory_aware_benchmark_main
   EXPORT ${PROJECT_NAME}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
@@ -50,7 +67,9 @@ install(
 
 ament_export_targets(${PROJECT_NAME})
 ament_export_dependencies(
-  ament_cmake_google_benchmark benchmark osrf_testing_tools_cpp)
+  ament_cmake_google_benchmark
+  benchmark
+  mimick_vendor)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -58,29 +77,13 @@ if(BUILD_TESTING)
 
   set(performance_test_fixture_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
   add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+  add_library(${PROJECT_NAME}::memory_aware_benchmark_main ALIAS memory_aware_benchmark_main)
   include(performance_test_fixture-extras.cmake)
 
   add_performance_test(
     benchmark_malloc_realloc
     test/benchmark/benchmark_malloc_realloc.cpp
-    TIMEOUT 90)
-
-  # Bypassing performance_test_fixture to avoid LD_PRELOAD of
-  # osrf_testing_tools_cpp
-  set(_no_mem_tools_skip_arg)
-  if(TARGET benchmark_malloc_realloc)
-    get_target_property(ARG_SKIP_RETURN_CODE benchmark_malloc_realloc SKIP_RETURN_CODE)
-    if(ARG_SKIP_RETURN_CODE)
-      set(_no_mem_tools_skip_arg SKIP_TEST)
-    endif()
-  else()
-    set(_no_mem_tools_skip_arg SKIP_TEST)
-  endif()
-  ament_add_google_benchmark(
-    benchmark_malloc_realloc_no_memory_tools
-    test/benchmark/benchmark_malloc_realloc_no_memory_tools.cpp
-    ${_no_mem_tools_skip_arg}
-    TIMEOUT 60)
+    TIMEOUT 120)
 
   add_performance_test(
     benchmark_pause_resume
