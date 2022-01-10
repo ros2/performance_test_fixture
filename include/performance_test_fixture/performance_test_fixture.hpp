@@ -19,7 +19,7 @@
 
 #include <atomic>
 
-#include <osrf_testing_tools_cpp/memory_tools/memory_tools.hpp>
+#include "osrf_testing_tools_cpp/memory_tools/memory_tools.hpp"
 
 #include "performance_test_fixture/visibility_control.hpp"
 
