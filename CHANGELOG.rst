@@ -2,6 +2,11 @@
 Changelog for package performance_test_fixture
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.0.8 (2022-01-14)
+------------------
+* Fix include order for cpplint (`#16 <https://github.com/ros2/performance_test_fixture/issues/16>`_)
+* Contributors: Jacob Perron
+
 0.0.7 (2021-03-18)
 ------------------
 * Record calls to calloc, update tests (`#15 <https://github.com/ros2/performance_test_fixture/issues/15>`_)
