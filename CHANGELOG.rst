@@ -2,6 +2,12 @@
 Changelog for package performance_test_fixture
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.0.9 (2022-07-25)
+------------------
+* Mirror rolling to main
+* Add "cstring" to the list of includes (`#19 <https://github.com/ros2/performance_test_fixture/issues/19>`_)
+* Contributors: Audrow Nash, Chris Lalancette
+
 0.0.8 (2022-01-14)
 ------------------
 * Fix include order for cpplint (`#16 <https://github.com/ros2/performance_test_fixture/issues/16>`_)
