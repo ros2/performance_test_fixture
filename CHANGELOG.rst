@@ -2,6 +2,12 @@
 Changelog for package performance_test_fixture
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Update performance_test_fixture to C++17. (`#21 <https://github.com/ros2/performance_test_fixture/issues/21>`_)
+* [rolling] Update maintainers - 2022-11-07 (`#20 <https://github.com/ros2/performance_test_fixture/issues/20>`_)
+* Contributors: Audrow Nash, Chris Lalancette
+
 0.0.9 (2022-07-25)
 ------------------
 * Mirror rolling to main
