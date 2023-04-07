@@ -71,11 +71,12 @@ static void benchmark_on_realloc(benchmark::State & state)
     }
     void * realloc_ptr = std::realloc(ptr, realloc_size);
     if (PERFORMANCE_TEST_FIXTURE_UNLIKELY(nullptr == realloc_ptr)) {
-      std::free(ptr);
       state.SkipWithError("Malloc failed to realloc");
+    } else {
+      ptr = realloc_ptr;
     }
-    std::free(realloc_ptr);
-    benchmark::DoNotOptimize(realloc_ptr);
+    std::free(ptr);
+    benchmark::DoNotOptimize(ptr);
     benchmark::ClobberMemory();
   }
 }
