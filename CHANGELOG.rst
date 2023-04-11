@@ -2,6 +2,11 @@
 Changelog for package performance_test_fixture
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Resolve use-after-free compiler warnings (`#24 <https://github.com/ros2/performance_test_fixture/issues/24>`_)
+* Contributors: Scott K Logan
+
 0.1.0 (2023-02-13)
 ------------------
 * Update performance_test_fixture to C++17. (`#21 <https://github.com/ros2/performance_test_fixture/issues/21>`_)
