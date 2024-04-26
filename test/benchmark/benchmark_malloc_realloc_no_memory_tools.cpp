@@ -31,8 +31,8 @@ static void benchmark_on_malloc(benchmark::State & state)
     if (PERFORMANCE_TEST_FIXTURE_UNLIKELY(nullptr == ptr)) {
       state.SkipWithError("Malloc failed to malloc");
     }
-    std::free(ptr);
     benchmark::DoNotOptimize(ptr);
+    std::free(ptr);
     benchmark::ClobberMemory();
   }
 }
@@ -48,8 +48,8 @@ static void benchmark_on_calloc(benchmark::State & state)
     if (PERFORMANCE_TEST_FIXTURE_UNLIKELY(nullptr == ptr)) {
       state.SkipWithError("Calloc failed to calloc");
     }
-    std::free(ptr);
     benchmark::DoNotOptimize(ptr);
+    std::free(ptr);
     benchmark::ClobberMemory();
   }
 }
@@ -75,8 +75,8 @@ static void benchmark_on_realloc(benchmark::State & state)
     } else {
       ptr = realloc_ptr;
     }
-    std::free(ptr);
     benchmark::DoNotOptimize(ptr);
+    std::free(ptr);
     benchmark::ClobberMemory();
   }
 }
