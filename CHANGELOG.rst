@@ -2,6 +2,11 @@
 Changelog for package performance_test_fixture
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix a warning when building on Ubuntu Noble. (`#26 <https://github.com/ros2/performance_test_fixture/issues/26>`_)
+* Contributors: Chris Lalancette
+
 0.3.0 (2024-04-26)
 ------------------
 
