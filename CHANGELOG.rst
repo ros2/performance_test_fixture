@@ -2,8 +2,8 @@
 Changelog for package performance_test_fixture
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.2.1 (2024-09-06)
+------------------
 * Fix a warning when building on Ubuntu Noble. (`#26 <https://github.com/ros2/performance_test_fixture/issues/26>`_) (`#27 <https://github.com/ros2/performance_test_fixture/issues/27>`_)
   In particular, gcc 13.2 was complaining that we were
   accessing a pointer after a free.  And that was technically
