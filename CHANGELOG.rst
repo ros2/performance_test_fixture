@@ -2,6 +2,11 @@
 Changelog for package performance_test_fixture
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* fix cmake deprecation (`#31 <https://github.com/ros2/performance_test_fixture/issues/31>`_)
+* Contributors: mosfet80
+
 0.4.0 (2025-04-24)
 ------------------
 * Remove CODEOWNERS and mirror-rolling-to-main workflow. (`#28 <https://github.com/ros2/performance_test_fixture/issues/28>`_)
