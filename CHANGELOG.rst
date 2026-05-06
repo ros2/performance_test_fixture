@@ -2,6 +2,9 @@
 Changelog for package performance_test_fixture
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.4.1 (2025-07-29)
 ------------------
 * fix cmake deprecation (`#31 <https://github.com/ros2/performance_test_fixture/issues/31>`_)
