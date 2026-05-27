@@ -138,7 +138,7 @@ BENCHMARK_REGISTER_F(PerformanceTestFixture, benchmark_on_calloc)
 // Three types of realloc tests, one where malloc is smaller than realloc, one where they are
 // the same, and one where malloc is larger than realloc. Realloc size ranges from 1 to 2^27
 // each time multiplying by 32. Each stop is tested with/without performance metrics
-const auto alloc_args = [](auto * b)
+const auto realloc_args = [](auto * b)
 {
   for (int64_t malloc_adjustment = -1; malloc_adjustment <= 1; ++malloc_adjustment) {
     for (int64_t realloc_shift = 0; realloc_shift < 32; realloc_shift += 8) {
