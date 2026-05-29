@@ -21,6 +21,17 @@ find_package(ament_cmake_test REQUIRED)
 find_package(benchmark REQUIRED)
 find_package(osrf_testing_tools_cpp REQUIRED)
 
+include(CheckCXXSourceCompiles)
+set(CMAKE_REQUIRED_LIBRARIES benchmark::benchmark)
+check_cxx_source_compiles("
+#include <benchmark/benchmark.h>
+void test(benchmark::Benchmark * b) { (void)b; }
+int main() { return 0; }
+" HAVE_BENCHMARK_BENCHMARK)
+if(HAVE_BENCHMARK_BENCHMARK)
+  add_compile_definitions(HAVE_BENCHMARK_BENCHMARK)
+endif()
+
 add_library(${PROJECT_NAME}
   src/${PROJECT_NAME}.cpp)
 

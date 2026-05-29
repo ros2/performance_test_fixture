@@ -18,6 +18,12 @@
 
 #include "./macros.h"
 
+#ifdef HAVE_BENCHMARK_BENCHMARK
+using BenchmarkType = benchmark::Benchmark;
+#else
+using BenchmarkType = benchmark::internal::Benchmark;
+#endif
+
 // This does not make use of PauseTiming or ResumeTiming because timing is very short for these
 // benchmarks. However, they should allow for comparisons to the other benchmark_malloc_realloc
 static void benchmark_on_malloc(benchmark::State & state)
@@ -89,7 +95,7 @@ BENCHMARK(benchmark_on_calloc)->ArgNames({"Alloc Size"})->RangeMultiplier(16)->R
 // Three types of realloc tests, one where malloc is smaller than realloc, one where they are
 // the same, and one where malloc is larger than realloc. Realloc size ranges from 1 to 2^27
 // each time multiplying by 32.
-static void realloc_args(benchmark::internal::Benchmark * b)
+static void realloc_args(BenchmarkType * b)
 {
   for (int64_t malloc_adjustment = -1; malloc_adjustment <= 1; ++malloc_adjustment) {
     for (int64_t realloc_shift = 0; realloc_shift < 32; realloc_shift += 8) {
