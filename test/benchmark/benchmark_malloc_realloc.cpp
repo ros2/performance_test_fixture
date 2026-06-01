@@ -120,13 +120,13 @@ BENCHMARK_DEFINE_F(PerformanceTestFixture, benchmark_on_realloc)(
 
 // allocation sizes Range from 1 to 2^27 each time multiplying by 16. Each value tested
 // with/without performance metrics
-static void alloc_args(benchmark::internal::Benchmark * b)
-{
-  for (int64_t shift_left = 0; shift_left < 32; shift_left += 4) {
-    b->Args({kDisablePerformanceTracking, 1ll << shift_left});
-    b->Args({kEnablePerformanceTracking, 1ll << shift_left});
-  }
-}
+const auto alloc_args = [](auto * b)
+  {
+    for (int64_t shift_left = 0; shift_left < 32; shift_left += 4) {
+      b->Args({kDisablePerformanceTracking, 1ll << shift_left});
+      b->Args({kEnablePerformanceTracking, 1ll << shift_left});
+    }
+  };
 
 BENCHMARK_REGISTER_F(PerformanceTestFixture, benchmark_on_malloc)
 ->ArgNames({"Enable Performance Tracking", "Alloc Size"})->Apply(alloc_args);
@@ -137,19 +137,19 @@ BENCHMARK_REGISTER_F(PerformanceTestFixture, benchmark_on_calloc)
 // Three types of realloc tests, one where malloc is smaller than realloc, one where they are
 // the same, and one where malloc is larger than realloc. Realloc size ranges from 1 to 2^27
 // each time multiplying by 32. Each stop is tested with/without performance metrics
-static void realloc_args(benchmark::internal::Benchmark * b)
-{
-  for (int64_t malloc_adjustment = -1; malloc_adjustment <= 1; ++malloc_adjustment) {
-    for (int64_t realloc_shift = 0; realloc_shift < 32; realloc_shift += 8) {
-      const int64_t malloc_shift = realloc_shift + malloc_adjustment;
-      if (malloc_shift < 0) {
-        continue;
+const auto realloc_args = [](auto * b)
+  {
+    for (int64_t malloc_adjustment = -1; malloc_adjustment <= 1; ++malloc_adjustment) {
+      for (int64_t realloc_shift = 0; realloc_shift < 32; realloc_shift += 8) {
+        const int64_t malloc_shift = realloc_shift + malloc_adjustment;
+        if (malloc_shift < 0) {
+          continue;
+        }
+        b->Args({kDisablePerformanceTracking, 1ll << malloc_shift, 1ll << realloc_shift});
+        b->Args({kEnablePerformanceTracking, 1ll << malloc_shift, 1ll << realloc_shift});
       }
-      b->Args({kDisablePerformanceTracking, 1ll << malloc_shift, 1ll << realloc_shift});
-      b->Args({kEnablePerformanceTracking, 1ll << malloc_shift, 1ll << realloc_shift});
     }
-  }
-}
+  };
 
 BENCHMARK_REGISTER_F(PerformanceTestFixture, benchmark_on_realloc)
 ->ArgNames({"Enable Performance Tracking", "Alloc Size", "Realloc Size"})
