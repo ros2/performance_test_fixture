@@ -2,6 +2,15 @@
 Changelog for package performance_test_fixture
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Remove CODEOWNERS and mirror-rolling-to-main workflow. (`#28 <https://github.com/ros2/performance_test_fixture/issues/28>`_) (`#29 <https://github.com/ros2/performance_test_fixture/issues/29>`_)
+  They are both outdated and both no longer serving their
+  intended purpose.
+  (cherry picked from commit 3e0177bcd49ddc898f371ff6ea5b76d7d5ded46d)
+  Co-authored-by: Chris Lalancette <clalancette@gmail.com>
+* Contributors: mergify[bot]
+
 0.2.1 (2024-09-06)
 ------------------
 * Fix a warning when building on Ubuntu Noble. (`#26 <https://github.com/ros2/performance_test_fixture/issues/26>`_) (`#27 <https://github.com/ros2/performance_test_fixture/issues/27>`_)
