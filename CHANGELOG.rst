@@ -2,8 +2,8 @@
 Changelog for package performance_test_fixture
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.2.2 (2026-06-02)
+------------------
 * Remove CODEOWNERS and mirror-rolling-to-main workflow. (`#28 <https://github.com/ros2/performance_test_fixture/issues/28>`_) (`#29 <https://github.com/ros2/performance_test_fixture/issues/29>`_)
   They are both outdated and both no longer serving their
   intended purpose.
