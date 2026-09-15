@@ -15,8 +15,11 @@
 #include "performance_test_fixture/performance_test_fixture.hpp"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdlib>
 #include <cstring>
+#include <functional>
+#include <iterator>
 #include <vector>
 
 #ifdef _WIN32
