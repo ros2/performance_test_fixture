@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <cstdlib>
+#include <benchmark/benchmark.h>
+
+#include <chrono>
 #include <string>
 
-#include "./macros.h"
 #include "performance_test_fixture/performance_test_fixture.hpp"
 
 namespace

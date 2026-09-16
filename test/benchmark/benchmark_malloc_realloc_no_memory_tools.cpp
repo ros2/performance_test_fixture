@@ -13,8 +13,10 @@
 // limitations under the License.
 
 #include <benchmark/benchmark.h>
+
+#include <cstddef>
+#include <cstdint>
 #include <cstdlib>
-#include <string>
 
 #include "./macros.h"
 
