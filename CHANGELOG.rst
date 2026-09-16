@@ -2,6 +2,13 @@
 Changelog for package performance_test_fixture
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.5.1 (2026-09-16)
+------------------
+* Include what you use (`#37 <https://github.com/ros2/performance_test_fixture/issues/37>`_)
+* use C++ 20 in default. (`#36 <https://github.com/ros2/performance_test_fixture/issues/36>`_)
+* Fix deprecated benchmark::internal::Benchmark warnings in performance tests (`#34 <https://github.com/ros2/performance_test_fixture/issues/34>`_)
+* Contributors: Alejandro Hernández Cordero, Miguel Angel Gonzalez Rodriguez, Tomoya Fujita
+
 0.5.0 (2026-05-06)
 ------------------
 
